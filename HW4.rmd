@@ -1,0 +1,121 @@
+---
+title: "Homework 4"
+author: "Matthew Nickols"
+date: "2024-03-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 2
+
+```{python}
+from sklearn import svm
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+data=pd.read_csv("diabetes_train.csv")
+m,n=data.shape
+model_features = ['preg',	'plas',	'pres',	'skin',	'insu',	'mass',	'pedi', 'age']
+ind = data[model_features] 
+dep = data['class']
+train_ind, test_ind, train_dep, test_dep = train_test_split(ind, dep, test_size=0.01319, shuffle=False)
+
+C=1e+03
+gamma=1e-05
+clf = svm.SVC(C=C, cache_size=200, class_weight=None, coef0=0.0,
+    decision_function_shape='ovr', degree=3, gamma=gamma, kernel='rbf',
+    max_iter=-1, probability=False, random_state=None, shrinking=True,
+    tol=0.001, verbose=False)
+
+clf.fit(train_ind,train_dep)
+```
+
+```{python}
+pred=clf.predict(test_ind)
+print("Prediction, True Class")
+for i in range(10):
+  print(pred[i], ", ", test_dep.iloc[i])
+  
+clf.support_vectors_.shape
+
+```
+
+## Problem 3
+
+```{python}
+import matplotlib.pyplot as plt 
+from sklearn.cluster import KMeans
+
+
+x = [2, 2, 8, 5, 7, 6, 1, 4]
+y = [10, 5, 4, 8, 5, 4, 2, 9]
+
+plt.scatter(x, y)
+plt.show()
+
+```
+
+## Part a
+
+```{python}
+data = list(zip(x, y))
+cluster_centers = np.array([[4, 9], [8, 4]])
+
+kmeans = KMeans(n_clusters=2, init = cluster_centers)
+kmeans.fit(data)
+
+plt.scatter(x, y, c=kmeans.labels_)
+plt.show() 
+
+kmeans.cluster_centers_
+```
+
+## Part b
+
+```{python}
+cluster_centers = kmeans.cluster_centers_
+cluster_centers
+kmeansb = KMeans(n_clusters=2, init = cluster_centers)
+kmeansb.fit(data)
+plt.scatter(x, y, c=kmeans.labels_)
+plt.show() 
+```
+
+## Problem 4
+
+## Part a
+
+```{r}
+distc = read.delim('distances.csv', header=TRUE, sep = ',', row.names = 1)
+distc = as.dist(distc)
+print(distc)
+hc = hclust(distc, method='single')
+plot(hc, hang = -1)
+plot(hc)
+
+clusters = cutree(hc, k=4)
+```
+
+## Part b
+
+<!-- Point a - pts < epsilon = 3 -->
+<!-- Point b - pts < epsilon = 7 -->
+<!-- Point c - pts < epsilon = 5 -->
+<!-- Point d - pts < epsilon = 6 -->
+<!-- Point e - pts < epsilon = 5 -->
+<!-- Point f - pts < epsilon = 6 -->
+<!-- Point g - pts < epsilon = 3 -->
+<!-- Point h - pts < epsilon = 6 -->
+
+```{r}
+library(dbscan)
+dbscan_result <- dbscan(distc, eps = 6, minPts = 2, borderPoints = FALSE)
+dbscan_result
+
+dbscan_result <- dbscan(distc, eps = 6, minPts = 2, borderPoints = TRUE)
+
+```
